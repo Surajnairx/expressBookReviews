@@ -14,6 +14,16 @@ const getBooks = () => {
     resolve(books);
   });
 };
+const getByISBN = (isbn) => {
+  return new Promise((resolve, reject) => {
+    let isbnNum = parseInt(isbn);
+    if (books[isbnNum]) {
+      resolve(books[isbnNum]);
+    } else {
+      reject({ status: 404, message: `ISBN ${isbn} not found` });
+    }
+  });
+};
 
 // Get the book list available in the shop
 public_users.get("/", async function (req, res) {
@@ -28,8 +38,10 @@ public_users.get("/", async function (req, res) {
 
 // Get book details based on ISBN
 public_users.get("/isbn/:isbn", function (req, res) {
-  //Write your code here
-  return res.status(300).json({ message: "Yet to be implemented" });
+  getByISBN(req.params.isbn).then(
+    (result) => res.send(result),
+    (error) => res.status(error.status).json({ message: error.message })
+  );
 });
 
 // Get book details based on author
